@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import type { Product } from "@/lib/garimpa/types";
 import { Button } from "@/components/ui/button";
 import { CategoryBadge, CommissionBadge, MarketplaceBadge, ScoreBadge } from "./Badges";
@@ -6,12 +7,31 @@ import { isSaved, toggleSaved, useOffers, useSaved } from "@/lib/garimpa/store";
 import { Bookmark, BookmarkCheck, GitCompare, Megaphone } from "lucide-react";
 
 export function ProductCard({ product }: { product: Product }) {
-  const offers = useOffers().filter((o) => o.productId === product.id);
-  const cheapest = offers.length ? Math.min(...offers.map((o) => o.price)) : null;
-  const bestOffer = offers.find((o) => o.bestOption);
+  const allOffers = useOffers();
+  const savedProducts = useSaved();
+
+  const offers = useMemo(
+    () => allOffers.filter((offer) => offer.productId === product.id),
+    [allOffers, product.id]
+  );
+
+  const cheapest = useMemo(() => {
+    if (!offers.length) return null;
+
+    return Math.min(...offers.map((offer) => offer.price));
+  }, [offers]);
+
+  const bestOffer = useMemo(
+    () => offers.find((offer) => offer.bestOption),
+    [offers]
+  );
+
   const commission = bestOffer?.commission ?? "Não informada";
-  const saved = useSaved();
-  const isFav = isSaved(saved, product.id);
+
+  const isFav = useMemo(
+    () => isSaved(savedProducts, product.id),
+    [savedProducts, product.id]
+  );
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
@@ -30,11 +50,13 @@ export function ProductCard({ product }: { product: Product }) {
           <ScoreBadge score={product.opportunityScore} />
         </div>
       </Link>
+
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex flex-wrap items-center gap-1.5">
           <CategoryBadge>{product.category}</CategoryBadge>
           <CommissionBadge value={commission} />
         </div>
+
         <Link
           to="/produto/$id"
           params={{ id: product.id }}
@@ -42,18 +64,24 @@ export function ProductCard({ product }: { product: Product }) {
         >
           {product.name}
         </Link>
+
         <div className="flex items-center justify-between text-sm">
           <div className="text-muted-foreground">A partir de</div>
           <div className="font-semibold text-brand-navy">
             {cheapest !== null
-              ? cheapest.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+              ? cheapest.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+              })
               : "—"}
           </div>
         </div>
+
         <div className="flex items-center justify-between">
           <span className="text-xs text-muted-foreground">Melhor em</span>
           <MarketplaceBadge name={product.bestMarketplace} />
         </div>
+
         <div className="mt-auto grid grid-cols-3 gap-1.5 pt-2">
           <Button asChild size="sm" variant="outline">
             <Link to="/produto/$id/comparativo" params={{ id: product.id }}>
@@ -61,6 +89,7 @@ export function ProductCard({ product }: { product: Product }) {
               <span className="hidden sm:inline">Comparar</span>
             </Link>
           </Button>
+
           <Button
             asChild
             size="sm"
@@ -71,13 +100,18 @@ export function ProductCard({ product }: { product: Product }) {
               <span className="hidden sm:inline">Anúncio</span>
             </Link>
           </Button>
+
           <Button
             size="sm"
             variant={isFav ? "secondary" : "ghost"}
             onClick={() => toggleSaved(product.id)}
             aria-label={isFav ? "Remover dos salvos" : "Salvar"}
           >
-            {isFav ? <BookmarkCheck className="h-3.5 w-3.5" /> : <Bookmark className="h-3.5 w-3.5" />}
+            {isFav ? (
+              <BookmarkCheck className="h-3.5 w-3.5" />
+            ) : (
+              <Bookmark className="h-3.5 w-3.5" />
+            )}
             <span className="hidden sm:inline">{isFav ? "Salvo" : "Salvar"}</span>
           </Button>
         </div>

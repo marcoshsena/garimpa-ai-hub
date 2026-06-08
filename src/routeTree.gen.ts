@@ -9,38 +9,211 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermosRouteImport } from './routes/termos'
+import { Route as SalvosRouteImport } from './routes/salvos'
+import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as GeradorRouteImport } from './routes/gerador'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
+import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
+import { Route as AdminOfertasRouteImport } from './routes/admin.ofertas'
+import { Route as ProdutoIdComparativoRouteImport } from './routes/produto.$id.comparativo'
 
+const TermosRoute = TermosRouteImport.update({
+  id: '/termos',
+  path: '/termos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SalvosRoute = SalvosRouteImport.update({
+  id: '/salvos',
+  path: '/salvos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacidadeRoute = PrivacidadeRouteImport.update({
+  id: '/privacidade',
+  path: '/privacidade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GeradorRoute = GeradorRouteImport.update({
+  id: '/gerador',
+  path: '/gerador',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardRoute = DashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProdutoIdRoute = ProdutoIdRouteImport.update({
+  id: '/produto/$id',
+  path: '/produto/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminProdutosRoute = AdminProdutosRouteImport.update({
+  id: '/produtos',
+  path: '/produtos',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOfertasRoute = AdminOfertasRouteImport.update({
+  id: '/ofertas',
+  path: '/ofertas',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ProdutoIdComparativoRoute = ProdutoIdComparativoRouteImport.update({
+  id: '/comparativo',
+  path: '/comparativo',
+  getParentRoute: () => ProdutoIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/dashboard': typeof DashboardRoute
+  '/gerador': typeof GeradorRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/salvos': typeof SalvosRoute
+  '/termos': typeof TermosRoute
+  '/admin/ofertas': typeof AdminOfertasRoute
+  '/admin/produtos': typeof AdminProdutosRoute
+  '/produto/$id': typeof ProdutoIdRouteWithChildren
+  '/produto/$id/comparativo': typeof ProdutoIdComparativoRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/dashboard': typeof DashboardRoute
+  '/gerador': typeof GeradorRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/salvos': typeof SalvosRoute
+  '/termos': typeof TermosRoute
+  '/admin/ofertas': typeof AdminOfertasRoute
+  '/admin/produtos': typeof AdminProdutosRoute
+  '/produto/$id': typeof ProdutoIdRouteWithChildren
+  '/produto/$id/comparativo': typeof ProdutoIdComparativoRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
+  '/dashboard': typeof DashboardRoute
+  '/gerador': typeof GeradorRoute
+  '/privacidade': typeof PrivacidadeRoute
+  '/salvos': typeof SalvosRoute
+  '/termos': typeof TermosRoute
+  '/admin/ofertas': typeof AdminOfertasRoute
+  '/admin/produtos': typeof AdminProdutosRoute
+  '/produto/$id': typeof ProdutoIdRouteWithChildren
+  '/produto/$id/comparativo': typeof ProdutoIdComparativoRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/dashboard'
+    | '/gerador'
+    | '/privacidade'
+    | '/salvos'
+    | '/termos'
+    | '/admin/ofertas'
+    | '/admin/produtos'
+    | '/produto/$id'
+    | '/produto/$id/comparativo'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/admin'
+    | '/dashboard'
+    | '/gerador'
+    | '/privacidade'
+    | '/salvos'
+    | '/termos'
+    | '/admin/ofertas'
+    | '/admin/produtos'
+    | '/produto/$id'
+    | '/produto/$id/comparativo'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/dashboard'
+    | '/gerador'
+    | '/privacidade'
+    | '/salvos'
+    | '/termos'
+    | '/admin/ofertas'
+    | '/admin/produtos'
+    | '/produto/$id'
+    | '/produto/$id/comparativo'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  DashboardRoute: typeof DashboardRoute
+  GeradorRoute: typeof GeradorRoute
+  PrivacidadeRoute: typeof PrivacidadeRoute
+  SalvosRoute: typeof SalvosRoute
+  TermosRoute: typeof TermosRoute
+  ProdutoIdRoute: typeof ProdutoIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/termos': {
+      id: '/termos'
+      path: '/termos'
+      fullPath: '/termos'
+      preLoaderRoute: typeof TermosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/salvos': {
+      id: '/salvos'
+      path: '/salvos'
+      fullPath: '/salvos'
+      preLoaderRoute: typeof SalvosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacidade': {
+      id: '/privacidade'
+      path: '/privacidade'
+      fullPath: '/privacidade'
+      preLoaderRoute: typeof PrivacidadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/gerador': {
+      id: '/gerador'
+      path: '/gerador'
+      fullPath: '/gerador'
+      preLoaderRoute: typeof GeradorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard': {
+      id: '/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +221,71 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/produto/$id': {
+      id: '/produto/$id'
+      path: '/produto/$id'
+      fullPath: '/produto/$id'
+      preLoaderRoute: typeof ProdutoIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/produtos': {
+      id: '/admin/produtos'
+      path: '/produtos'
+      fullPath: '/admin/produtos'
+      preLoaderRoute: typeof AdminProdutosRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/ofertas': {
+      id: '/admin/ofertas'
+      path: '/ofertas'
+      fullPath: '/admin/ofertas'
+      preLoaderRoute: typeof AdminOfertasRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/produto/$id/comparativo': {
+      id: '/produto/$id/comparativo'
+      path: '/comparativo'
+      fullPath: '/produto/$id/comparativo'
+      preLoaderRoute: typeof ProdutoIdComparativoRouteImport
+      parentRoute: typeof ProdutoIdRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminOfertasRoute: typeof AdminOfertasRoute
+  AdminProdutosRoute: typeof AdminProdutosRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminOfertasRoute: AdminOfertasRoute,
+  AdminProdutosRoute: AdminProdutosRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ProdutoIdRouteChildren {
+  ProdutoIdComparativoRoute: typeof ProdutoIdComparativoRoute
+}
+
+const ProdutoIdRouteChildren: ProdutoIdRouteChildren = {
+  ProdutoIdComparativoRoute: ProdutoIdComparativoRoute,
+}
+
+const ProdutoIdRouteWithChildren = ProdutoIdRoute._addFileChildren(
+  ProdutoIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
+  DashboardRoute: DashboardRoute,
+  GeradorRoute: GeradorRoute,
+  PrivacidadeRoute: PrivacidadeRoute,
+  SalvosRoute: SalvosRoute,
+  TermosRoute: TermosRoute,
+  ProdutoIdRoute: ProdutoIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

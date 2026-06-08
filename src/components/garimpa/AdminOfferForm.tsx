@@ -8,9 +8,25 @@ import { Label } from "@/components/ui/label";
 const baseSelect =
   "h-9 w-full rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
 
+interface OfferFormState {
+  productId: string;
+  marketplace: Offer["marketplace"];
+  title: string;
+  price: string;
+  rating: string;
+  reviews: string;
+  shipping: string;
+  originalLink: string;
+  affiliateLink: string;
+  commission: Offer["commission"];
+  note: string;
+  offerScore: string;
+  bestOption: boolean;
+}
+
 export function AdminOfferForm() {
   const products = useProducts();
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<OfferFormState>({
     productId: products[0]?.id ?? "",
     marketplace: MARKETPLACES[0],
     title: "",
@@ -20,7 +36,7 @@ export function AdminOfferForm() {
     shipping: "",
     originalLink: "",
     affiliateLink: "",
-    commission: "Média" as Offer["commission"],
+    commission: "Média",
     note: "",
     offerScore: "8",
     bestOption: false,

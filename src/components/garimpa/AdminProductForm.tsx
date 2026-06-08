@@ -8,7 +8,23 @@ import { Label } from "@/components/ui/label";
 const baseSelect =
   "h-9 w-full rounded-md border border-input bg-background px-2 text-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring";
 
-const initial = {
+interface FormState {
+  name: string;
+  category: Product["category"];
+  niche: string;
+  image: string;
+  shortDescription: string;
+  idealAudience: string;
+  problemSolved: string;
+  strongPoint: string;
+  attentionPoint: string;
+  opportunityScore: string;
+  bestMarketplace: Product["bestMarketplace"];
+  status: Product["status"];
+  featured: boolean;
+}
+
+const initial: FormState = {
   name: "",
   category: CATEGORIES[0],
   niche: "",
@@ -20,7 +36,7 @@ const initial = {
   attentionPoint: "",
   opportunityScore: "8",
   bestMarketplace: MARKETPLACES[0],
-  status: "Ativo" as Product["status"],
+  status: "Ativo",
   featured: false,
 };
 

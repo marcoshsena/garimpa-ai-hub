@@ -53,7 +53,7 @@ export function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
         />
         <div className="absolute left-2 top-2">
-          <ScoreBadge score={product.opportunityScore} />
+          <ScoreBadge score={displayScore} />
         </div>
       </Link>
 
@@ -84,8 +84,8 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Melhor em</span>
-          <MarketplaceBadge name={product.bestMarketplace} />
+          <span className="text-xs text-muted-foreground">Melhor opção em</span>
+          <MarketplaceBadge name={displayMarketplace} />
         </div>
 
         <div className="mt-auto grid grid-cols-3 gap-1.5 pt-2">

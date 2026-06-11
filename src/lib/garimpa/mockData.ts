@@ -1,4 +1,4 @@
-import type { Product, Offer } from "./types";
+import type { Product, Offer, Availability, Commission, Marketplace } from "./types";
 
 const today = new Date().toISOString();
 
@@ -19,6 +19,7 @@ export const mockProducts: Product[] = [
     bestMarketplace: "Amazon",
     status: "Ativo",
     featured: true,
+    trending: true,
     updatedAt: today,
   },
   {
@@ -26,8 +27,7 @@ export const mockProducts: Product[] = [
     name: "Organizador de pia compacto",
     category: "Casa e Organização",
     image: "https://images.unsplash.com/photo-1556909114-44e3e9399a2c?w=600&q=70",
-    shortDescription:
-      "Suporte para esponja, detergente e bucha que libera espaço na pia.",
+    shortDescription: "Suporte para esponja, detergente e bucha que libera espaço na pia.",
     idealAudience: "Apartamentos pequenos e quem mora de aluguel.",
     problemSolved: "Pia bagunçada e produtos espalhados.",
     strongPoint: "Ocupa pouco espaço e tem boa avaliação.",
@@ -69,6 +69,7 @@ export const mockProducts: Product[] = [
     bestMarketplace: "Amazon",
     status: "Ativo",
     featured: true,
+    trending: true,
     updatedAt: today,
   },
   {
@@ -117,6 +118,7 @@ export const mockProducts: Product[] = [
     bestMarketplace: "Magalu",
     status: "Ativo",
     featured: true,
+    trending: true,
     updatedAt: today,
   },
   {
@@ -137,78 +139,110 @@ export const mockProducts: Product[] = [
   },
 ];
 
-function buildOffers(
-  productId: string,
-  base: number,
-  bestIdx: number,
-): Offer[] {
-  const data: Array<Omit<Offer, "id" | "productId" | "updatedAt" | "bestOption" | "offerScore">> = [
+// Variação realista por marketplace para gerar ofertas diferentes do mesmo produto base.
+interface MarketplaceVariant {
+  marketplace: Marketplace;
+  priceMul: number;
+  rating: number;
+  reviews: number;
+  sales: number;
+  shipping: string;
+  originalLink: string;
+  commission: Commission;
+  availability: Availability;
+  note?: string;
+  titleSuffix: string;
+}
+
+const variantPool: Record<string, MarketplaceVariant[]> = {
+  default: [
     {
       marketplace: "Amazon",
-      title: `${productId.toUpperCase()} - Versão Prime`,
-      price: +(base * 1.0).toFixed(2),
+      priceMul: 1.0,
       rating: 4.6,
       reviews: 1248,
+      sales: 3200,
       shipping: "Frete grátis Prime",
       originalLink: "https://amazon.com.br/exemplo",
-      affiliateLink: "",
       commission: "Média",
-      note: "Boa prova social e entrega rápida.",
+      availability: "Em estoque",
+      titleSuffix: "Versão Prime",
+      note: "Entrega rápida via Prime.",
     },
     {
       marketplace: "Mercado Livre",
-      title: `${productId.toUpperCase()} - Full`,
-      price: +(base * 0.95).toFixed(2),
+      priceMul: 0.95,
       rating: 4.5,
       reviews: 3120,
+      sales: 8800,
       shipping: "Mercado Envios Full",
       originalLink: "https://mercadolivre.com.br/exemplo",
-      affiliateLink: "",
       commission: "Alta",
-      note: "Muitos vendidos, alta comissão típica.",
+      availability: "Em estoque",
+      titleSuffix: "Full",
+      note: "Muito vendido na categoria.",
     },
     {
       marketplace: "Shopee",
-      title: `${productId.toUpperCase()} - Promo`,
-      price: +(base * 0.88).toFixed(2),
+      priceMul: 0.88,
       rating: 4.7,
       reviews: 8420,
+      sales: 15400,
       shipping: "Frete grátis acima de R$ 19",
       originalLink: "https://shopee.com.br/exemplo",
-      affiliateLink: "",
       commission: "Alta",
-      note: "Preço mais baixo, ótimo para cupom.",
+      availability: "Estoque baixo",
+      titleSuffix: "Promo",
+      note: "Preço mais baixo — combine com cupom.",
     },
     {
       marketplace: "Magalu",
-      title: `${productId.toUpperCase()} - Magalu`,
-      price: +(base * 1.05).toFixed(2),
+      priceMul: 1.05,
       rating: 4.4,
       reviews: 540,
+      sales: 1100,
       shipping: "Entrega rápida em capitais",
       originalLink: "https://magazineluiza.com.br/exemplo",
-      affiliateLink: "",
       commission: "Média",
+      availability: "Em estoque",
+      titleSuffix: "Magalu",
       note: "Boa para parcelamento.",
     },
-  ];
-  return data.map((d, i) => ({
-    ...d,
+  ],
+};
+
+function buildOffers(productId: string, base: number): Offer[] {
+  const variants = variantPool.default;
+  return variants.map((v, i) => ({
     id: `${productId}-o${i + 1}`,
     productId,
-    bestOption: i === bestIdx,
-    offerScore: i === bestIdx ? 9.2 : +(7 + Math.random() * 1.5).toFixed(1),
+    marketplace: v.marketplace,
+    title: `${productId.toUpperCase()} - ${v.titleSuffix}`,
+    price: +(base * v.priceMul).toFixed(2),
+    rating: v.rating,
+    reviews: v.reviews,
+    sales: v.sales,
+    availability: v.availability,
+    shipping: v.shipping,
+    originalLink: v.originalLink,
+    affiliateLink: "",
+    commission: v.commission,
+    note: v.note,
+    // `offerScore` e `bestOption` são apenas dicas iniciais — a ranking real
+    // é calculada em tempo de execução por `enrichOffers` (lib/garimpa/ranking).
+    offerScore: 7.5,
+    bestOption: false,
     updatedAt: today,
   }));
 }
 
 export const mockOffers: Offer[] = [
-  ...buildOffers("p1", 78.9, 0),
-  ...buildOffers("p2", 24.9, 2),
-  ...buildOffers("p3", 39.9, 1),
-  ...buildOffers("p4", 89.9, 0),
-  ...buildOffers("p5", 59.9, 2),
-  ...buildOffers("p6", 49.9, 1),
-  ...buildOffers("p7", 69.9, 3),
-  ...buildOffers("p8", 99.9, 0),
+  ...buildOffers("p1", 78.9),
+  ...buildOffers("p2", 24.9),
+  ...buildOffers("p3", 39.9),
+  ...buildOffers("p4", 89.9),
+  ...buildOffers("p5", 59.9),
+  ...buildOffers("p6", 49.9),
+  ...buildOffers("p7", 69.9),
+  ...buildOffers("p8", 99.9),
 ];

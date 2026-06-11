@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MARKETPLACES, type Offer } from "@/lib/garimpa/types";
+import { AVAILABILITIES, MARKETPLACES, type Offer } from "@/lib/garimpa/types";
 import { addOffer, useProducts } from "@/lib/garimpa/store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";

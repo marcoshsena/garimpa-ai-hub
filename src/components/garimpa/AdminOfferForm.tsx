@@ -15,6 +15,8 @@ interface OfferFormState {
   price: string;
   rating: string;
   reviews: string;
+  sales: string;
+  availability: Offer["availability"];
   shipping: string;
   originalLink: string;
   affiliateLink: string;

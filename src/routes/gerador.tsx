@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { AppShell } from "@/components/garimpa/AppShell";
 import { AdGenerator } from "@/components/garimpa/AdGenerator";
-import { useProduct, useProductOffers, useProducts } from "@/lib/garimpa/store";
+import { useProduct, useEnrichedProductOffers, useProducts } from "@/lib/garimpa/store";
 
 const searchSchema = z.object({
   produto: z.string().optional(),

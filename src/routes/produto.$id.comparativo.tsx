@@ -13,7 +13,11 @@ export const Route = createFileRoute("/produto/$id/comparativo")({
 function Compare() {
   const { id } = Route.useParams();
   const product = useProduct(id);
-  const offers = useProductOffers(id);
+  const allOffers = useEnrichedProductOffers(id);
+  const active = useActiveMarketplaces();
+  const offers = active.length
+    ? allOffers.filter((o) => active.includes(o.marketplace))
+    : allOffers;
 
   if (!product) {
     return (
@@ -31,7 +35,10 @@ function Compare() {
         </Button>
       </div>
       <h1 className="text-2xl font-semibold text-brand-navy">{product.name}</h1>
-      <p className="mb-6 text-sm text-muted-foreground">Comparativo entre marketplaces</p>
+      <p className="mb-6 text-sm text-muted-foreground">
+        Comparativo entre marketplaces ativos · {offers.length}{" "}
+        {offers.length === 1 ? "oferta" : "ofertas"}
+      </p>
       <MarketplaceComparisonTable productId={id} offers={offers} />
     </AppShell>
   );

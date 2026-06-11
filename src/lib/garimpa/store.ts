@@ -1,10 +1,13 @@
-import { useEffect, useState, useCallback } from "react";
-import type { Product, Offer } from "./types";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import type { Product, Offer, Marketplace } from "./types";
+import { MARKETPLACES } from "./types";
 import { mockProducts, mockOffers } from "./mockData";
+import { enrichOffers, type EnrichedOffer } from "./ranking";
 
 const LS_PRODUCTS = "garimpa:products";
 const LS_OFFERS = "garimpa:offers";
 const LS_SAVED = "garimpa:saved";
+const LS_ACTIVE_MARKETPLACES = "garimpa:activeMarketplaces";
 
 type Listener = () => void;
 
@@ -74,6 +77,12 @@ export function useOffers(): Offer[] {
   return useLocalStorageValue<Offer[]>(LS_OFFERS, mockOffers);
 }
 
+/** Ofertas enriquecidas com `computedScore`, `computedBest` e `reason`. */
+export function useEnrichedOffers(): EnrichedOffer[] {
+  const offers = useOffers();
+  return useMemo(() => enrichOffers(offers), [offers]);
+}
+
 export function useProduct(id: string | undefined): Product | undefined {
   const products = useProducts();
 
@@ -84,6 +93,11 @@ export function useProductOffers(id: string | undefined): Offer[] {
   const offers = useOffers();
 
   return offers.filter((offer) => offer.productId === id);
+}
+
+export function useEnrichedProductOffers(id: string | undefined): EnrichedOffer[] {
+  const all = useEnrichedOffers();
+  return useMemo(() => all.filter((o) => o.productId === id), [all, id]);
 }
 
 export function addProduct(product: Product) {
@@ -126,6 +140,26 @@ export function toggleSaved(productId: string) {
 
 export function isSaved(list: SavedEntry[], productId: string) {
   return list.some((savedProduct) => savedProduct.productId === productId);
+}
+
+/** Marketplaces ativos para curadoria. Persistido no localStorage. */
+export function useActiveMarketplaces(): Marketplace[] {
+  const value = useLocalStorageValue<Marketplace[]>(LS_ACTIVE_MARKETPLACES, MARKETPLACES);
+  // sanitiza valores caso o usuário tenha persistido um marketplace inválido
+  return useMemo(
+    () => value.filter((m): m is Marketplace => MARKETPLACES.includes(m)),
+    [value],
+  );
+}
+
+export function setActiveMarketplaces(list: Marketplace[]) {
+  writeLS(LS_ACTIVE_MARKETPLACES, list);
+}
+
+export function toggleActiveMarketplace(m: Marketplace) {
+  const current = readLS<Marketplace[]>(LS_ACTIVE_MARKETPLACES, MARKETPLACES);
+  const next = current.includes(m) ? current.filter((x) => x !== m) : [...current, m];
+  writeLS(LS_ACTIVE_MARKETPLACES, next);
 }
 
 export function useCopy() {

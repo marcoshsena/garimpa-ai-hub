@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/garimpa/AppShell";
 import { MarketplaceComparisonTable } from "@/components/garimpa/MarketplaceComparisonTable";
-import { useProduct, useProductOffers } from "@/lib/garimpa/store";
+import { useProduct, useEnrichedProductOffers, useActiveMarketplaces } from "@/lib/garimpa/store";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 

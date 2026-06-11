@@ -67,6 +67,8 @@ export function AdminOfferForm() {
       price,
       rating: Number(form.rating) || 0,
       reviews: Number(form.reviews) || 0,
+      sales: Number(form.sales) || 0,
+      availability: form.availability,
       shipping: form.shipping.trim(),
       originalLink: form.originalLink.trim(),
       affiliateLink: form.affiliateLink.trim(),

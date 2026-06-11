@@ -113,8 +113,20 @@ export function AdminOfferForm() {
       <Field label="Avaliação (0-5)">
         <Input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })} />
       </Field>
-      <Field label="Nº avaliações / vendidos">
+      <Field label="Nº avaliações">
         <Input type="number" value={form.reviews} onChange={(e) => setForm({ ...form, reviews: e.target.value })} />
+      </Field>
+      <Field label="Vendas aproximadas">
+        <Input type="number" value={form.sales} onChange={(e) => setForm({ ...form, sales: e.target.value })} />
+      </Field>
+      <Field label="Disponibilidade">
+        <select
+          className={baseSelect}
+          value={form.availability}
+          onChange={(e) => setForm({ ...form, availability: e.target.value as Offer["availability"] })}
+        >
+          {AVAILABILITIES.map((a) => <option key={a} value={a}>{a}</option>)}
+        </select>
       </Field>
       <Field label="Frete / entrega">
         <Input value={form.shipping} onChange={(e) => setForm({ ...form, shipping: e.target.value })} />

@@ -33,6 +33,8 @@ export function AdminOfferForm() {
     price: "",
     rating: "4.5",
     reviews: "0",
+    sales: "0",
+    availability: "Em estoque",
     shipping: "",
     originalLink: "",
     affiliateLink: "",

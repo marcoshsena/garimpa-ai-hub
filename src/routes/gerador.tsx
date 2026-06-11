@@ -25,7 +25,7 @@ function GeradorPage() {
   const products = useProducts();
   const selectedId = produto ?? products[0]?.id;
   const product = useProduct(selectedId);
-  const offers = useProductOffers(selectedId);
+  const offers = useEnrichedProductOffers(selectedId);
 
   return (
     <AppShell>

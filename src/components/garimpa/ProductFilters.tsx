@@ -1,21 +1,27 @@
-import { CATEGORIES, MARKETPLACES, type Category, type Commission, type Marketplace } from "@/lib/garimpa/types";
+import {
+  CATEGORIES,
+  OPPORTUNITY_TYPES,
+  type Category,
+  type Commission,
+  type OpportunityType,
+} from "@/lib/garimpa/types";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 
 export interface Filters {
   query: string;
   category: Category | "all";
-  marketplace: Marketplace | "all";
   minScore: number;
   commission: Commission | "all";
+  opportunityType: OpportunityType;
 }
 
 export const defaultFilters: Filters = {
   query: "",
   category: "all",
-  marketplace: "all",
   minScore: 0,
   commission: "all",
+  opportunityType: "Melhores oportunidades",
 };
 
 const baseSelect =
@@ -32,7 +38,7 @@ export function ProductFilters({
     onChange({ ...value, [key]: v });
 
   return (
-    <div className="grid gap-3 rounded-xl border bg-card p-4 shadow-sm md:grid-cols-[1.5fr_1fr_1fr_1fr_1fr]">
+    <div className="grid gap-3 rounded-xl border bg-card p-4 shadow-sm md:grid-cols-[1.5fr_1fr_1fr_1fr_1.2fr]">
       <div className="relative">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
@@ -50,16 +56,6 @@ export function ProductFilters({
         <option value="all">Todas categorias</option>
         {CATEGORIES.map((c) => (
           <option key={c} value={c}>{c}</option>
-        ))}
-      </select>
-      <select
-        className={baseSelect}
-        value={value.marketplace}
-        onChange={(e) => update("marketplace", e.target.value as Filters["marketplace"])}
-      >
-        <option value="all">Todos marketplaces</option>
-        {MARKETPLACES.map((m) => (
-          <option key={m} value={m}>{m}</option>
         ))}
       </select>
       <select
@@ -83,6 +79,16 @@ export function ProductFilters({
         <option value="Média">Média</option>
         <option value="Baixa">Baixa</option>
         <option value="Não informada">Não informada</option>
+      </select>
+      <select
+        className={baseSelect}
+        value={value.opportunityType}
+        onChange={(e) => update("opportunityType", e.target.value as OpportunityType)}
+        title="Tipo de oportunidade — define a ordenação"
+      >
+        {OPPORTUNITY_TYPES.map((t) => (
+          <option key={t} value={t}>{t}</option>
+        ))}
       </select>
     </div>
   );

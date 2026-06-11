@@ -3,30 +3,36 @@ import { useMemo } from "react";
 import type { Product } from "@/lib/garimpa/types";
 import { Button } from "@/components/ui/button";
 import { CategoryBadge, CommissionBadge, MarketplaceBadge, ScoreBadge } from "./Badges";
-import { isSaved, toggleSaved, useOffers, useSaved } from "@/lib/garimpa/store";
+import {
+  isSaved,
+  toggleSaved,
+  useEnrichedOffers,
+  useActiveMarketplaces,
+  useSaved,
+} from "@/lib/garimpa/store";
+import { bestOfferOf } from "@/lib/garimpa/ranking";
 import { Bookmark, BookmarkCheck, GitCompare, Megaphone } from "lucide-react";
 
 export function ProductCard({ product }: { product: Product }) {
-  const allOffers = useOffers();
+  const allOffers = useEnrichedOffers();
+  const active = useActiveMarketplaces();
   const savedProducts = useSaved();
 
-  const offers = useMemo(
-    () => allOffers.filter((offer) => offer.productId === product.id),
-    [allOffers, product.id]
-  );
+  const offers = useMemo(() => {
+    const list = allOffers.filter((o) => o.productId === product.id);
+    return active.length ? list.filter((o) => active.includes(o.marketplace)) : list;
+  }, [allOffers, active, product.id]);
 
   const cheapest = useMemo(() => {
     if (!offers.length) return null;
-
     return Math.min(...offers.map((offer) => offer.price));
   }, [offers]);
 
-  const bestOffer = useMemo(
-    () => offers.find((offer) => offer.bestOption),
-    [offers]
-  );
+  const bestOffer = useMemo(() => bestOfferOf(offers), [offers]);
 
   const commission = bestOffer?.commission ?? "Não informada";
+  const displayMarketplace = bestOffer?.marketplace ?? product.bestMarketplace;
+  const displayScore = bestOffer?.computedScore ?? product.opportunityScore;
 
   const isFav = useMemo(
     () => isSaved(savedProducts, product.id),
@@ -47,7 +53,7 @@ export function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
         />
         <div className="absolute left-2 top-2">
-          <ScoreBadge score={product.opportunityScore} />
+          <ScoreBadge score={displayScore} />
         </div>
       </Link>
 
@@ -78,8 +84,8 @@ export function ProductCard({ product }: { product: Product }) {
         </div>
 
         <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Melhor em</span>
-          <MarketplaceBadge name={product.bestMarketplace} />
+          <span className="text-xs text-muted-foreground">Melhor opção em</span>
+          <MarketplaceBadge name={displayMarketplace} />
         </div>
 
         <div className="mt-auto grid grid-cols-3 gap-1.5 pt-2">

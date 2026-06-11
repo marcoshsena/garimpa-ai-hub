@@ -15,7 +15,10 @@ export function AdGenerator({
   initialOfferId?: string;
 }) {
   const defaultOffer =
-    offers.find((o) => o.id === initialOfferId) ?? offers.find((o) => o.bestOption) ?? offers[0];
+    offers.find((o) => o.id === initialOfferId) ??
+    offers.find((o) => (o as Offer & { computedBest?: boolean }).computedBest) ??
+    offers.find((o) => o.bestOption) ??
+    offers[0];
   const [offerId, setOfferId] = useState<string>(defaultOffer?.id ?? "");
   const [format, setFormat] = useState<AdFormat>("whatsapp_completo");
   const offer = useMemo(() => offers.find((o) => o.id === offerId) ?? defaultOffer, [offers, offerId, defaultOffer]);

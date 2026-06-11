@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MARKETPLACES, type Offer } from "@/lib/garimpa/types";
+import { AVAILABILITIES, MARKETPLACES, type Offer } from "@/lib/garimpa/types";
 import { addOffer, useProducts } from "@/lib/garimpa/store";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,6 +15,8 @@ interface OfferFormState {
   price: string;
   rating: string;
   reviews: string;
+  sales: string;
+  availability: Offer["availability"];
   shipping: string;
   originalLink: string;
   affiliateLink: string;
@@ -33,6 +35,8 @@ export function AdminOfferForm() {
     price: "",
     rating: "4.5",
     reviews: "0",
+    sales: "0",
+    availability: "Em estoque",
     shipping: "",
     originalLink: "",
     affiliateLink: "",
@@ -63,6 +67,8 @@ export function AdminOfferForm() {
       price,
       rating: Number(form.rating) || 0,
       reviews: Number(form.reviews) || 0,
+      sales: Number(form.sales) || 0,
+      availability: form.availability,
       shipping: form.shipping.trim(),
       originalLink: form.originalLink.trim(),
       affiliateLink: form.affiliateLink.trim(),
@@ -107,8 +113,20 @@ export function AdminOfferForm() {
       <Field label="Avaliação (0-5)">
         <Input type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: e.target.value })} />
       </Field>
-      <Field label="Nº avaliações / vendidos">
+      <Field label="Nº avaliações">
         <Input type="number" value={form.reviews} onChange={(e) => setForm({ ...form, reviews: e.target.value })} />
+      </Field>
+      <Field label="Vendas aproximadas">
+        <Input type="number" value={form.sales} onChange={(e) => setForm({ ...form, sales: e.target.value })} />
+      </Field>
+      <Field label="Disponibilidade">
+        <select
+          className={baseSelect}
+          value={form.availability}
+          onChange={(e) => setForm({ ...form, availability: e.target.value as Offer["availability"] })}
+        >
+          {AVAILABILITIES.map((a) => <option key={a} value={a}>{a}</option>)}
+        </select>
       </Field>
       <Field label="Frete / entrega">
         <Input value={form.shipping} onChange={(e) => setForm({ ...form, shipping: e.target.value })} />

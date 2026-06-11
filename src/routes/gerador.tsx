@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 import { AppShell } from "@/components/garimpa/AppShell";
 import { AdGenerator } from "@/components/garimpa/AdGenerator";
-import { useProduct, useProductOffers, useProducts } from "@/lib/garimpa/store";
+import { useProduct, useEnrichedProductOffers, useProducts } from "@/lib/garimpa/store";
 
 const searchSchema = z.object({
   produto: z.string().optional(),
@@ -25,7 +25,7 @@ function GeradorPage() {
   const products = useProducts();
   const selectedId = produto ?? products[0]?.id;
   const product = useProduct(selectedId);
-  const offers = useProductOffers(selectedId);
+  const offers = useEnrichedProductOffers(selectedId);
 
   return (
     <AppShell>

@@ -3,7 +3,7 @@ import { AppShell } from "@/components/garimpa/AppShell";
 import { useProduct, useProductOffers, toggleSaved, useSaved, isSaved } from "@/lib/garimpa/store";
 import { CategoryBadge, MarketplaceBadge, ScoreBadge } from "@/components/garimpa/Badges";
 import { Button } from "@/components/ui/button";
-import { Bookmark, BookmarkCheck, GitCompare, Megaphone } from "lucide-react";
+import { Bookmark, BookmarkCheck, Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/produto/$id")({
   head: ({ params }) => ({
@@ -71,11 +71,6 @@ function ProductDetail() {
           </p>
 
           <div className="flex flex-wrap gap-2 pt-2">
-            <Button asChild variant="outline">
-              <Link to="/produto/$id/comparativo" params={{ id: product.id }}>
-                <GitCompare className="h-4 w-4" /> Ver comparativo
-              </Link>
-            </Button>
             <Button asChild className="bg-brand-orange text-brand-orange-foreground hover:bg-brand-orange/90">
               <Link to="/gerador" search={{ produto: product.id }}>
                 <Megaphone className="h-4 w-4" /> Gerar anúncio

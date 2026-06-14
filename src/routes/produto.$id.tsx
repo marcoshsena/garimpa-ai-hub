@@ -3,7 +3,7 @@ import { AppShell } from "@/components/garimpa/AppShell";
 import { useProduct, useProductOffers, toggleSaved, useSaved, isSaved } from "@/lib/garimpa/store";
 import { CategoryBadge, MarketplaceBadge, ScoreBadge } from "@/components/garimpa/Badges";
 import { Button } from "@/components/ui/button";
-import { Bookmark, BookmarkCheck, GitCompare, Megaphone } from "lucide-react";
+import { Bookmark, BookmarkCheck, Megaphone } from "lucide-react";
 
 export const Route = createFileRoute("/produto/$id")({
   head: ({ params }) => ({

@@ -11,7 +11,7 @@ import {
   useSaved,
 } from "@/lib/garimpa/store";
 import { bestOfferOf } from "@/lib/garimpa/ranking";
-import { Bookmark, BookmarkCheck, GitCompare, Megaphone } from "lucide-react";
+import { Bookmark, BookmarkCheck, GitCompare, Megaphone, Star } from "lucide-react";
 
 export function ProductCard({ product }: { product: Product }) {
   const allOffers = useEnrichedOffers();
@@ -23,21 +23,16 @@ export function ProductCard({ product }: { product: Product }) {
     return active.length ? list.filter((o) => active.includes(o.marketplace)) : list;
   }, [allOffers, active, product.id]);
 
-  const cheapest = useMemo(() => {
-    if (!offers.length) return null;
-    return Math.min(...offers.map((offer) => offer.price));
-  }, [offers]);
-
   const bestOffer = useMemo(() => bestOfferOf(offers), [offers]);
-
-  const commission = bestOffer?.commission ?? "Não informada";
-  const displayMarketplace = bestOffer?.marketplace ?? product.bestMarketplace;
-  const displayScore = bestOffer?.computedScore ?? product.opportunityScore;
 
   const isFav = useMemo(
     () => isSaved(savedProducts, product.id),
     [savedProducts, product.id]
   );
+
+  if (!bestOffer) return null;
+
+  const marketplaceCount = offers.length;
 
   return (
     <div className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-shadow hover:shadow-md">
@@ -53,14 +48,15 @@ export function ProductCard({ product }: { product: Product }) {
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
         />
         <div className="absolute left-2 top-2">
-          <ScoreBadge score={displayScore} />
+          <ScoreBadge score={bestOffer.computedScore} />
         </div>
       </Link>
 
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex flex-wrap items-center gap-1.5">
           <CategoryBadge>{product.category}</CategoryBadge>
-          <CommissionBadge value={commission} />
+          <MarketplaceBadge name={bestOffer.marketplace} />
+          <CommissionBadge value={bestOffer.commission} />
         </div>
 
         <Link
@@ -71,21 +67,29 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </Link>
 
-        <div className="flex items-center justify-between text-sm">
-          <div className="text-muted-foreground">A partir de</div>
-          <div className="font-semibold text-brand-navy">
-            {cheapest !== null
-              ? cheapest.toLocaleString("pt-BR", {
-                style: "currency",
-                currency: "BRL",
-              })
-              : "—"}
+        <div className="rounded-md border bg-muted/30 p-2.5 text-sm">
+          <div className="mb-1 flex items-center justify-between text-[11px] uppercase tracking-wide text-muted-foreground">
+            <span>Melhor oferta encontrada</span>
+            <span>em {bestOffer.marketplace}</span>
           </div>
+          <div className="flex items-baseline justify-between">
+            <span className="text-lg font-semibold text-brand-navy">
+              {bestOffer.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            </span>
+            <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <Star className="h-3 w-3 fill-warning text-warning" />
+              {bestOffer.rating.toFixed(1)} · {bestOffer.reviews.toLocaleString("pt-BR")} aval.
+            </span>
+          </div>
+          {bestOffer.sales ? (
+            <div className="mt-1 text-[11px] text-muted-foreground">
+              ~{bestOffer.sales.toLocaleString("pt-BR")} vendas aproximadas
+            </div>
+          ) : null}
         </div>
 
-        <div className="flex items-center justify-between">
-          <span className="text-xs text-muted-foreground">Melhor opção em</span>
-          <MarketplaceBadge name={displayMarketplace} />
+        <div className="text-xs text-muted-foreground">
+          Disponível em {marketplaceCount} marketplace{marketplaceCount > 1 ? "s" : ""}
         </div>
 
         <div className="mt-auto grid grid-cols-3 gap-1.5 pt-2">
@@ -101,7 +105,7 @@ export function ProductCard({ product }: { product: Product }) {
             size="sm"
             className="bg-brand-orange text-brand-orange-foreground hover:bg-brand-orange/90"
           >
-            <Link to="/gerador" search={{ produto: product.id }}>
+            <Link to="/gerador" search={{ produto: product.id, oferta: bestOffer.id }}>
               <Megaphone className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">Anúncio</span>
             </Link>

@@ -19,6 +19,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProdutoIdRouteImport } from './routes/produto.$id'
 import { Route as AdminProdutosRouteImport } from './routes/admin.produtos'
 import { Route as AdminOfertasRouteImport } from './routes/admin.ofertas'
+import { Route as ProdutoIdIndexRouteImport } from './routes/produto.$id.index'
 import { Route as ProdutoIdComparativoRouteImport } from './routes/produto.$id.comparativo'
 
 const TermosRoute = TermosRouteImport.update({
@@ -71,6 +72,11 @@ const AdminOfertasRoute = AdminOfertasRouteImport.update({
   path: '/ofertas',
   getParentRoute: () => AdminRoute,
 } as any)
+const ProdutoIdIndexRoute = ProdutoIdIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProdutoIdRoute,
+} as any)
 const ProdutoIdComparativoRoute = ProdutoIdComparativoRouteImport.update({
   id: '/comparativo',
   path: '/comparativo',
@@ -89,6 +95,7 @@ export interface FileRoutesByFullPath {
   '/admin/produtos': typeof AdminProdutosRoute
   '/produto/$id': typeof ProdutoIdRouteWithChildren
   '/produto/$id/comparativo': typeof ProdutoIdComparativoRoute
+  '/produto/$id/': typeof ProdutoIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,8 +107,8 @@ export interface FileRoutesByTo {
   '/termos': typeof TermosRoute
   '/admin/ofertas': typeof AdminOfertasRoute
   '/admin/produtos': typeof AdminProdutosRoute
-  '/produto/$id': typeof ProdutoIdRouteWithChildren
   '/produto/$id/comparativo': typeof ProdutoIdComparativoRoute
+  '/produto/$id': typeof ProdutoIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -116,6 +123,7 @@ export interface FileRoutesById {
   '/admin/produtos': typeof AdminProdutosRoute
   '/produto/$id': typeof ProdutoIdRouteWithChildren
   '/produto/$id/comparativo': typeof ProdutoIdComparativoRoute
+  '/produto/$id/': typeof ProdutoIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -131,6 +139,7 @@ export interface FileRouteTypes {
     | '/admin/produtos'
     | '/produto/$id'
     | '/produto/$id/comparativo'
+    | '/produto/$id/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,8 +151,8 @@ export interface FileRouteTypes {
     | '/termos'
     | '/admin/ofertas'
     | '/admin/produtos'
-    | '/produto/$id'
     | '/produto/$id/comparativo'
+    | '/produto/$id'
   id:
     | '__root__'
     | '/'
@@ -157,6 +166,7 @@ export interface FileRouteTypes {
     | '/admin/produtos'
     | '/produto/$id'
     | '/produto/$id/comparativo'
+    | '/produto/$id/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -242,6 +252,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOfertasRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/produto/$id/': {
+      id: '/produto/$id/'
+      path: '/'
+      fullPath: '/produto/$id/'
+      preLoaderRoute: typeof ProdutoIdIndexRouteImport
+      parentRoute: typeof ProdutoIdRoute
+    }
     '/produto/$id/comparativo': {
       id: '/produto/$id/comparativo'
       path: '/comparativo'
@@ -266,10 +283,12 @@ const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
 interface ProdutoIdRouteChildren {
   ProdutoIdComparativoRoute: typeof ProdutoIdComparativoRoute
+  ProdutoIdIndexRoute: typeof ProdutoIdIndexRoute
 }
 
 const ProdutoIdRouteChildren: ProdutoIdRouteChildren = {
   ProdutoIdComparativoRoute: ProdutoIdComparativoRoute,
+  ProdutoIdIndexRoute: ProdutoIdIndexRoute,
 }
 
 const ProdutoIdRouteWithChildren = ProdutoIdRoute._addFileChildren(
@@ -289,3 +308,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

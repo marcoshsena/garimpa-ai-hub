@@ -140,37 +140,43 @@ function Compare() {
           <div className="min-w-0 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <CategoryBadge>{product.category}</CategoryBadge>
-              <ScoreBadge score={product.opportunityScore} />
-              <MarketplaceBadge name={product.bestMarketplace} />
+
+              {bestOverall ? (
+                <>
+                  <ScoreBadge score={bestOverall.computedScore} />
+                  <MarketplaceBadge name={bestOverall.marketplace} />
+                </>
+              ) : (
+                <ScoreBadge score={product.opportunityScore} />
+              )}
               {product.trending && (
                 <span className="inline-flex items-center rounded-md border border-brand-orange/40 bg-brand-orange/10 px-2 py-0.5 text-xs font-semibold text-brand-orange">
                   Em alta
                 </span>
               )}
             </div>
-            <h1 className="text-xl font-semibold text-brand-navy sm:text-2xl">
-              {product.name}
-            </h1>
-            <p className="text-sm text-muted-foreground line-clamp-2">
-              {product.shortDescription}
-            </p>
+            <h1 className="text-xl font-semibold text-brand-navy sm:text-2xl">{product.name}</h1>
+            <p className="text-sm text-muted-foreground line-clamp-2">{product.shortDescription}</p>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              {cheapest !== null && (
+              {bestOverall && (
                 <span>
-                  A partir de{" "}
+                  Melhor oferta{" "}
                   <span className="font-semibold text-brand-navy">
-                    {cheapest.toLocaleString("pt-BR", {
+                    {bestOverall.price.toLocaleString("pt-BR", {
                       style: "currency",
                       currency: "BRL",
                     })}
                   </span>
                 </span>
               )}
-              <span>Melhor plataforma: <strong className="text-brand-navy">{product.bestMarketplace}</strong></span>
-              <span>
-                Atualizado em{" "}
-                {new Date(product.updatedAt).toLocaleDateString("pt-BR")}
-              </span>
+
+              {bestOverall && (
+                <span>
+                  Melhor plataforma:{" "}
+                  <strong className="text-brand-navy">{bestOverall.marketplace}</strong>
+                </span>
+              )}
+              <span>Atualizado em {new Date(product.updatedAt).toLocaleDateString("pt-BR")}</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 md:flex-col md:items-end">
@@ -194,11 +200,7 @@ function Compare() {
               variant={fav ? "secondary" : "outline"}
               onClick={() => toggleSaved(product.id)}
             >
-              {fav ? (
-                <BookmarkCheck className="h-4 w-4" />
-              ) : (
-                <Bookmark className="h-4 w-4" />
-              )}
+              {fav ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
               {fav ? "Salvo" : "Salvar produto"}
             </Button>
           </div>
@@ -325,7 +327,8 @@ function Compare() {
                 ? `Motivos: ${bestOverall.reason}. `
                 : "Apresenta o melhor equilíbrio entre os critérios analisados. "}
               <span className="text-muted-foreground">
-                Esta é uma sugestão automática — você decide qual oferta divulgar com base nos dados.
+                Esta é uma sugestão automática — você decide qual oferta divulgar com base nos
+                dados.
               </span>
             </p>
           )}
@@ -336,18 +339,12 @@ function Compare() {
                 asChild
                 className="bg-brand-orange text-brand-orange-foreground hover:bg-brand-orange/90"
               >
-                <Link
-                  to="/gerador"
-                  search={{ produto: product.id, oferta: bestOverall.id }}
-                >
+                <Link to="/gerador" search={{ produto: product.id, oferta: bestOverall.id }}>
                   <Megaphone className="h-4 w-4" /> Gerar anúncio da melhor opção
                 </Link>
               </Button>
             )}
-            <Button
-              variant={fav ? "secondary" : "outline"}
-              onClick={() => toggleSaved(product.id)}
-            >
+            <Button variant={fav ? "secondary" : "outline"} onClick={() => toggleSaved(product.id)}>
               {fav ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
               {fav ? "Salvo" : "Salvar produto"}
             </Button>
@@ -458,9 +455,7 @@ function VerticalComparison({
       render: (o) =>
         o ? (
           <div className="text-xs text-muted-foreground">
-            {o.sales ? (
-              <div>~{o.sales.toLocaleString("pt-BR")} vendas</div>
-            ) : null}
+            {o.sales ? <div>~{o.sales.toLocaleString("pt-BR")} vendas</div> : null}
             <div>{o.reviews.toLocaleString("pt-BR")} avaliações</div>
           </div>
         ) : (
@@ -493,7 +488,7 @@ function VerticalComparison({
       label: "Melhor opção?",
       render: (o) =>
         o ? (
-          o.computedBest ? (
+          winners.best === o.id ? (
             <span className="inline-flex items-center gap-1 rounded-md bg-brand-orange/15 px-2 py-1 text-xs font-semibold text-brand-orange">
               <Trophy className="h-3 w-3" /> Sim
             </span>

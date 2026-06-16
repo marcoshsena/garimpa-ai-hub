@@ -53,7 +53,7 @@ function Saved() {
                     </Link>
                   </td>
                   <td className="px-3 py-3"><CategoryBadge>{product.category}</CategoryBadge></td>
-                  <td className="px-3 py-3"><MarketplaceBadge name={product.bestMarketplace} /></td>
+                  <td className="px-3 py-3">{product.bestMarketplace ? <MarketplaceBadge name={product.bestMarketplace} /> : <span className="text-xs text-muted-foreground">—</span>}</td>
                   <td className="px-3 py-3"><ScoreBadge score={product.opportunityScore} /></td>
                   <td className="px-3 py-3 text-xs text-muted-foreground">
                     {new Date(entry.savedAt).toLocaleDateString("pt-BR")}

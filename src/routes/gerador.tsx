@@ -14,7 +14,11 @@ export const Route = createFileRoute("/gerador")({
   head: () => ({
     meta: [
       { title: "Gerador de anúncios — Garimpa AI" },
-      { name: "description", content: "Gere anúncios para WhatsApp, Instagram, Reels e Stories." },
+      {
+        name: "description",
+        content:
+          "Gere anúncios, roteiros, legendas e prompts premium de vídeo IA para produtos de afiliados.",
+      },
     ],
   }),
   component: GeradorPage,
@@ -32,10 +36,14 @@ function GeradorPage() {
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl font-semibold text-brand-navy">Gerador de anúncios</h1>
-          <p className="text-sm text-muted-foreground">Textos prontos com tom anti-spam, prontos para copiar.</p>
+          <p className="text-sm text-muted-foreground">
+            Gere legendas, roteiros, hooks e prompts de vídeo IA com base na oferta selecionada.
+          </p>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Produto</label>
+          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+            Produto
+          </label>
           <select
             className="h-9 rounded-md border border-input bg-background px-2 text-sm"
             value={selectedId ?? ""}
@@ -47,7 +55,9 @@ function GeradorPage() {
             }}
           >
             {products.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
             ))}
           </select>
         </div>

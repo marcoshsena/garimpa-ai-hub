@@ -71,10 +71,10 @@ function Dashboard() {
   // Summary stats
   const stats = useMemo(() => {
     const totalOpps = filtered.length;
+    const trending = filtered.filter((p) => p.trending).length;
     const bestList = filtered
       .map((p) => bestOfferOf(offerGroups.get(p.id) ?? []))
       .filter((o): o is NonNullable<typeof o> => Boolean(o));
-    const trending = bestList.filter((o) => o.trending).length;
     const highCommission = bestList.filter((o) => o.commission === "Alta").length;
     const avgScore = bestList.length
       ? bestList.reduce((s, o) => s + o.computedScore, 0) / bestList.length

@@ -13,6 +13,10 @@ import {
   LayoutDashboard,
   Users,
   ArrowRight,
+  MessageCircle,
+  Instagram,
+  Video,
+  Send,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -131,13 +135,14 @@ function Landing() {
           </span>
 
           <h1 className="mx-auto mt-6 max-w-5xl text-balance text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
-            Garimpe produtos com potencial, compare marketplaces e crie anúncios{" "}
-            <span className="text-brand-orange">em minutos.</span>
+            Compare marketplaces, descubra a melhor oferta e gere conteúdos{" "}
+            <span className="text-brand-orange">prontos para divulgar.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-base leading-7 text-white/80 sm:text-lg">
-            O Garimpa AI ajuda afiliados e canais de ofertas a encontrar boas oportunidades,
-            comparar opções e divulgar com mais rapidez, sem parecer spam.
+            O Garimpa AI ajuda afiliados e criadores de canais de ofertas a achar produtos
+            com potencial, comparar marketplaces e gerar anúncios para WhatsApp, Instagram,
+            TikTok, Reels, Stories e vídeos com IA — sem parecer spam.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">
@@ -265,6 +270,78 @@ function Landing() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-20">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
+          <span className="inline-flex items-center gap-2 rounded-full bg-brand-orange/10 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-brand-orange">
+            <Megaphone className="h-3.5 w-3.5" />
+            Formatos gerados
+          </span>
+          <h2 className="mt-4 text-3xl font-semibold text-brand-navy sm:text-4xl">
+            Um anúncio, vários canais
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Cada oferta vira conteúdo pronto para os formatos onde o seu público está.
+          </p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              icon: MessageCircle,
+              title: "Mensageria",
+              items: ["WhatsApp curto", "WhatsApp completo", "Telegram"],
+            },
+            {
+              icon: Instagram,
+              title: "Instagram",
+              items: ["Feed", "Carrossel", "Stories"],
+            },
+            {
+              icon: Video,
+              title: "Vídeo curto",
+              items: ["Reels", "TikTok"],
+            },
+            {
+              icon: Sparkles,
+              title: "Premium IA",
+              items: ["Vídeo IA", "UGC IA", "Review IA", "Comparativo IA"],
+              accent: true,
+            },
+          ].map((g) => (
+            <div
+              key={g.title}
+              className={`rounded-2xl border p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md ${
+                g.accent
+                  ? "border-brand-orange/40 bg-gradient-to-br from-brand-orange/10 to-brand-navy/5"
+                  : "bg-card"
+              }`}
+            >
+              <div
+                className={`mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl ${
+                  g.accent ? "bg-brand-orange text-white" : "bg-brand-navy/10 text-brand-navy"
+                }`}
+              >
+                <g.icon className="h-5 w-5" />
+              </div>
+              <h3 className="text-base font-semibold text-brand-navy">{g.title}</h3>
+              <ul className="mt-3 space-y-1.5 text-sm text-muted-foreground">
+                {g.items.map((it) => (
+                  <li key={it} className="flex items-center gap-2">
+                    <Check className="h-3.5 w-3.5 text-[oklch(0.4_0.12_150)]" />
+                    {it}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          <Send className="mr-1 inline h-3 w-3" />
+          Os formatos Premium IA geram roteiros prontos para gravar com avatar, UGC, review ou comparativo.
+        </p>
       </section>
 
       <section className="bg-muted/35 py-20">

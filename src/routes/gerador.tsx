@@ -1,8 +1,9 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { AppShell } from "@/components/garimpa/AppShell";
 import { AdGenerator } from "@/components/garimpa/AdGenerator";
 import { useProduct, useEnrichedProductOffers, useProducts } from "@/lib/garimpa/store";
+import { Megaphone } from "lucide-react";
 
 const searchSchema = z.object({
   produto: z.string().optional(),
@@ -14,7 +15,11 @@ export const Route = createFileRoute("/gerador")({
   head: () => ({
     meta: [
       { title: "Gerador de anúncios — Garimpa AI" },
-      { name: "description", content: "Gere anúncios para WhatsApp, Instagram, Reels e Stories." },
+      {
+        name: "description",
+        content:
+          "Gere anúncios prontos para WhatsApp, Telegram, Instagram, Reels, Stories, TikTok e roteiros com IA.",
+      },
     ],
   }),
   component: GeradorPage,
@@ -26,25 +31,38 @@ function GeradorPage() {
   const selectedId = produto ?? products[0]?.id;
   const product = useProduct(selectedId);
   const offers = useEnrichedProductOffers(selectedId);
+  const navigate = useNavigate();
 
   return (
     <AppShell>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-brand-navy">Gerador de anúncios</h1>
-          <p className="text-sm text-muted-foreground">Textos prontos com tom anti-spam, prontos para copiar.</p>
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-brand-orange/15 text-brand-orange">
+            <Megaphone className="h-5 w-5" />
+          </span>
+          <div>
+            <h1 className="text-2xl font-semibold text-brand-navy">
+              Central de criação de anúncios
+            </h1>
+            <p className="text-sm text-muted-foreground">
+              Textos e roteiros prontos para WhatsApp, Instagram, Reels, Stories,
+              TikTok e formatos premium com IA.
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Produto</label>
+          <label className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Produto
+          </label>
           <select
             className="h-9 rounded-md border border-input bg-background px-2 text-sm"
             value={selectedId ?? ""}
-            onChange={(e) => {
-              const url = new URL(window.location.href);
-              url.searchParams.set("produto", e.target.value);
-              url.searchParams.delete("oferta");
-              window.location.assign(url.toString());
-            }}
+            onChange={(e) =>
+              navigate({
+                to: "/gerador",
+                search: { produto: e.target.value },
+              })
+            }
           >
             {products.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>

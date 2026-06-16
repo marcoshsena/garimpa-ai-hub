@@ -45,6 +45,16 @@ export function ProductCard({ product }: { product: Product }) {
           src={product.image}
           alt={product.name}
           loading="lazy"
+          onError={(e) => {
+            const t = e.currentTarget;
+            if (t.dataset.fallback) return;
+            t.dataset.fallback = "1";
+            t.src =
+              "data:image/svg+xml;utf8," +
+              encodeURIComponent(
+                `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 150'><rect width='200' height='150' fill='%23e2e8f0'/><text x='50%' y='52%' font-family='sans-serif' font-size='14' fill='%2364748b' text-anchor='middle'>sem imagem</text></svg>`,
+              );
+          }}
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
         />
         <div className="absolute left-2 top-2">

@@ -13,6 +13,10 @@ import {
   LayoutDashboard,
   Users,
   ArrowRight,
+  MessageCircle,
+  Instagram,
+  Video,
+  Send,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -131,13 +135,14 @@ function Landing() {
           </span>
 
           <h1 className="mx-auto mt-6 max-w-5xl text-balance text-4xl font-bold leading-tight sm:text-5xl md:text-6xl">
-            Garimpe produtos com potencial, compare marketplaces e crie anúncios{" "}
-            <span className="text-brand-orange">em minutos.</span>
+            Compare marketplaces, descubra a melhor oferta e gere conteúdos{" "}
+            <span className="text-brand-orange">prontos para divulgar.</span>
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-balance text-base leading-7 text-white/80 sm:text-lg">
-            O Garimpa AI ajuda afiliados e canais de ofertas a encontrar boas oportunidades,
-            comparar opções e divulgar com mais rapidez, sem parecer spam.
+            O Garimpa AI ajuda afiliados e criadores de canais de ofertas a achar produtos
+            com potencial, comparar marketplaces e gerar anúncios para WhatsApp, Instagram,
+            TikTok, Reels, Stories e vídeos com IA — sem parecer spam.
           </p>
 
           <div className="mt-8 flex flex-wrap justify-center gap-3">

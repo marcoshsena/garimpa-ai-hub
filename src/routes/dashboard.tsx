@@ -18,7 +18,7 @@ import {
 import { MARKETPLACES, type Marketplace } from "@/lib/garimpa/types";
 import { rankProducts, bestOfferOf, groupByProduct } from "@/lib/garimpa/ranking";
 import { cn } from "@/lib/utils";
-import { Package, TrendingUp, Trophy, Sparkles } from "lucide-react";
+import { Package, Store, Sparkles, Users } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({
@@ -71,16 +71,18 @@ function Dashboard() {
   // Summary stats
   const stats = useMemo(() => {
     const totalOpps = filtered.length;
-    const trending = filtered.filter((p) => p.trending).length;
     const bestList = filtered
       .map((p) => bestOfferOf(offerGroups.get(p.id) ?? []))
       .filter((o): o is NonNullable<typeof o> => Boolean(o));
-    const highCommission = bestList.filter((o) => o.commission === "Alta").length;
-    const avgScore = bestList.length
-      ? bestList.reduce((s, o) => s + o.computedScore, 0) / bestList.length
+    const bestScore = bestList.length
+      ? Math.max(...bestList.map((o) => o.computedScore))
       : 0;
-    return { totalOpps, trending, highCommission, avgScore };
-  }, [filtered, offerGroups]);
+    const topSocial = bestList.length
+      ? Math.max(...bestList.map((o) => o.reviews ?? 0))
+      : 0;
+    const activeCount = active.length;
+    return { totalOpps, bestScore, topSocial, activeCount };
+  }, [filtered, offerGroups, active]);
 
   const singleMode = active.length === 1;
 
@@ -107,29 +109,33 @@ function Dashboard() {
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           icon={Package}
-          label="Oportunidades"
+          label="Produtos encontrados"
           value={String(stats.totalOpps)}
-          hint="produtos filtrados"
+          hint="após filtros aplicados"
         />
         <StatCard
-          icon={Sparkles}
-          label="Nota média"
-          value={stats.avgScore ? stats.avgScore.toFixed(1) : "—"}
-          hint="das melhores ofertas"
+          icon={Store}
+          label="Marketplaces ativos"
+          value={`${stats.activeCount}/${MARKETPLACES.length}`}
+          hint="selecionados para curadoria"
           tone="navy"
         />
         <StatCard
-          icon={TrendingUp}
-          label="Em alta"
-          value={String(stats.trending)}
-          hint="produtos trending"
+          icon={Sparkles}
+          label="Melhor nota"
+          value={stats.bestScore ? stats.bestScore.toFixed(1) : "—"}
+          hint="entre as oportunidades"
           tone="orange"
         />
         <StatCard
-          icon={Trophy}
-          label="Comissão alta"
-          value={String(stats.highCommission)}
-          hint="ofertas com alta comissão"
+          icon={Users}
+          label="Maior prova social"
+          value={
+            stats.topSocial >= 1000
+              ? `${(stats.topSocial / 1000).toFixed(1)}k`
+              : String(stats.topSocial || "—")
+          }
+          hint="avaliações no top produto"
           tone="success"
         />
       </div>

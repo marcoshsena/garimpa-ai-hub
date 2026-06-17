@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/garimpa/AppShell";
 import { useProduct, useProductOffers, toggleSaved, useSaved, isSaved } from "@/lib/garimpa/store";
 import { CategoryBadge, MarketplaceBadge, ScoreBadge } from "@/components/garimpa/Badges";
+import { ProductImage } from "@/components/garimpa/ProductImage";
 import { Button } from "@/components/ui/button";
-import { Bookmark, BookmarkCheck, GitCompare, Megaphone } from "lucide-react";
+import { Bookmark, BookmarkCheck, GitCompare, Megaphone, ArrowRight } from "lucide-react";
 import { bestOfferOf, enrichOffers } from "@/lib/garimpa/ranking";
 
 export const Route = createFileRoute("/produto/$id/")({
@@ -47,11 +48,9 @@ function ProductDetail() {
     <AppShell>
       <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
         <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="aspect-[4/3] w-full object-cover"
-          />
+          <div className="aspect-[4/3] w-full">
+            <ProductImage src={product.image} alt={product.name} />
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -73,15 +72,21 @@ function ProductDetail() {
           <p className="text-muted-foreground">{product.shortDescription}</p>
 
           {bestOffer && (
-            <div className="rounded-md border bg-muted/40 px-3 py-2 text-sm">
-              Melhor oferta{" "}
-              <span className="font-semibold text-brand-navy">
-                {bestOffer.price.toLocaleString("pt-BR", {
-                  style: "currency",
-                  currency: "BRL",
-                })}
-              </span>{" "}
-              em <span className="font-semibold text-brand-navy">{bestOffer.marketplace}</span>
+            <div className="rounded-lg border border-brand-navy/15 bg-gradient-to-br from-brand-navy/5 to-transparent p-4">
+              <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                Melhor oferta encontrada
+              </div>
+              <div className="mt-1 flex flex-wrap items-baseline gap-3">
+                <span className="text-3xl font-bold text-brand-navy">
+                  {bestOffer.price.toLocaleString("pt-BR", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  em <span className="font-semibold text-foreground">{bestOffer.marketplace}</span>
+                </span>
+              </div>
             </div>
           )}
 
@@ -95,36 +100,52 @@ function ProductDetail() {
           <p className="text-xs text-muted-foreground">
             Última atualização: {new Date(product.updatedAt).toLocaleDateString("pt-BR")}
           </p>
-
-          <div className="flex flex-wrap gap-2 pt-2">
-            <Button
-              asChild
-              className="bg-brand-orange text-brand-orange-foreground hover:bg-brand-orange/90"
-            >
-              <Link
-                to="/gerador"
-                search={{
-                  produto: product.id,
-                  ...(bestOffer ? { oferta: bestOffer.id } : {}),
-                }}
-              >
-                <Megaphone className="h-4 w-4" /> Gerar anúncio
-              </Link>
-            </Button>
-
-            <Button asChild variant="outline">
-              <Link to="/produto/$id/comparativo" params={{ id: product.id }}>
-                <GitCompare className="h-4 w-4" /> Comparar marketplaces
-              </Link>
-            </Button>
-
-            <Button variant={fav ? "secondary" : "ghost"} onClick={() => toggleSaved(product.id)}>
-              {fav ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
-              {fav ? "Salvo" : "Salvar"}
-            </Button>
-          </div>
         </div>
       </div>
+
+      {/* Próximos passos */}
+      <section className="mt-8 rounded-xl border bg-card p-5 shadow-sm">
+        <div className="mb-3 flex items-center gap-2">
+          <ArrowRight className="h-4 w-4 text-brand-orange" />
+          <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-navy">
+            Próximos passos
+          </h2>
+        </div>
+        <p className="mb-4 text-sm text-muted-foreground">
+          Compare as ofertas disponíveis, gere conteúdo pronto ou salve para revisitar mais tarde.
+        </p>
+        <div className="grid gap-2 sm:grid-cols-3">
+          <Button asChild variant="outline" className="justify-start">
+            <Link to="/produto/$id/comparativo" params={{ id: product.id }}>
+              <GitCompare className="h-4 w-4" />
+              Comparar marketplaces
+            </Link>
+          </Button>
+          <Button
+            asChild
+            className="justify-start bg-brand-orange text-brand-orange-foreground hover:bg-brand-orange/90"
+          >
+            <Link
+              to="/gerador"
+              search={{
+                produto: product.id,
+                ...(bestOffer ? { oferta: bestOffer.id } : {}),
+              }}
+            >
+              <Megaphone className="h-4 w-4" />
+              Gerar anúncio da melhor oferta
+            </Link>
+          </Button>
+          <Button
+            variant={fav ? "secondary" : "outline"}
+            onClick={() => toggleSaved(product.id)}
+            className="justify-start"
+          >
+            {fav ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+            {fav ? "Salvo na sua lista" : "Salvar produto"}
+          </Button>
+        </div>
+      </section>
     </AppShell>
   );
 }

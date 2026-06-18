@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { MARKETPLACES, type Commission, type Marketplace } from "@/lib/garimpa/types";
 import { cn } from "@/lib/utils";
+import { getProductDiagnosis } from "@/lib/garimpa/recommendations";
 
 export const Route = createFileRoute("/produto/$id/comparativo")({
   head: () => ({ meta: [{ title: "Comparativo — Garimpa AI" }] }),
@@ -110,9 +111,7 @@ function Compare() {
     );
   }
 
-  const cheapest = allOffers.length
-    ? Math.min(...allOffers.map((o) => o.price))
-    : null;
+  const diagnosis = bestOverall ? getProductDiagnosis(product, bestOverall, allOffers) : null;
 
   const toggle = (m: Marketplace) =>
     setSelected((cur) =>
@@ -286,6 +285,7 @@ function Compare() {
           <h2 className="mb-3 flex items-center gap-2 text-base font-semibold text-brand-navy">
             <Trophy className="h-4 w-4 text-brand-orange" /> Resumo da análise
           </h2>
+
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
             <SummaryItem
               label="Melhor opção sugerida"
@@ -298,7 +298,10 @@ function Compare() {
               winnerId={winners.price}
               offerByMarketplace={offerByMarketplace}
               format={(o) =>
-                o.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
+                o.price.toLocaleString("pt-BR", {
+                  style: "currency",
+                  currency: "BRL",
+                })
               }
             />
             <SummaryItem
@@ -320,6 +323,7 @@ function Compare() {
               format={(o) => o.commission}
             />
           </div>
+
           {bestOverall && (
             <p className="mt-4 rounded-md border bg-card/60 p-3 text-sm text-brand-navy">
               <strong>Melhor opção sugerida: {bestOverall.marketplace}.</strong>{" "}
@@ -333,6 +337,95 @@ function Compare() {
             </p>
           )}
 
+          {diagnosis && (
+            <div className="mt-4 rounded-xl border bg-card p-4">
+              <div className="mb-3">
+                <h3 className="text-base font-semibold text-brand-navy">Diagnóstico Garimpa AI</h3>
+                <p className="text-sm text-muted-foreground">
+                  Uma leitura rápida sobre o potencial desta oferta para divulgação.
+                </p>
+              </div>
+
+              <div className="grid gap-3 md:grid-cols-3">
+                <div className="rounded-lg border bg-muted/30 p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Potencial
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-brand-navy">
+                    {diagnosis.potential}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border bg-muted/30 p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Potencial visual
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-brand-navy">
+                    {diagnosis.visualPotential}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border bg-muted/30 p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Risco de divulgação
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-brand-navy">
+                    {diagnosis.disclosureRisk}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                <div>
+                  <h4 className="text-sm font-semibold text-brand-navy">
+                    Por que essa oferta foi sugerida?
+                  </h4>
+
+                  <ul className="mt-2 space-y-1 text-sm text-muted-foreground">
+                    {diagnosis.reasons.map((reason) => (
+                      <li key={reason}>✓ {reason}</li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-semibold text-brand-navy">Canais recomendados</h4>
+
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {diagnosis.bestChannels.map((channel) => (
+                      <span
+                        key={channel}
+                        className="rounded-full border bg-muted px-2.5 py-1 text-xs font-medium"
+                      >
+                        {channel}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="mt-4">
+                    <h4 className="text-sm font-semibold text-brand-navy">Abordagem sugerida</h4>
+                    <p className="mt-1 text-sm text-muted-foreground">{diagnosis.bestApproach}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <h4 className="text-sm font-semibold text-brand-navy">Tags inteligentes</h4>
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {diagnosis.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-brand-orange/10 px-2.5 py-1 text-xs font-medium text-brand-navy"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="mt-4 flex flex-wrap gap-2">
             {bestOverall && (
               <Button
@@ -344,10 +437,12 @@ function Compare() {
                 </Link>
               </Button>
             )}
+
             <Button variant={fav ? "secondary" : "outline"} onClick={() => toggleSaved(product.id)}>
               {fav ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
               {fav ? "Salvo" : "Salvar produto"}
             </Button>
+
             <Button asChild variant="ghost">
               <Link to="/dashboard">Voltar para produtos</Link>
             </Button>

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useMemo } from "react";
+import { useMemo, type ReactNode } from "react";
 import type { Product } from "@/lib/garimpa/types";
 import { Button } from "@/components/ui/button";
 import { CategoryBadge, CommissionBadge, MarketplaceBadge, ScoreBadge } from "./Badges";
@@ -13,6 +13,7 @@ import {
 } from "@/lib/garimpa/store";
 import { bestOfferOf } from "@/lib/garimpa/ranking";
 import { Bookmark, BookmarkCheck, GitCompare, Megaphone, Star, TrendingUp } from "lucide-react";
+import { getProductDiagnosis } from "@/lib/garimpa/recommendations";
 
 export function ProductCard({ product }: { product: Product }) {
   const allOffers = useEnrichedOffers();
@@ -20,16 +21,15 @@ export function ProductCard({ product }: { product: Product }) {
   const savedProducts = useSaved();
 
   const offers = useMemo(() => {
-    const list = allOffers.filter((o) => o.productId === product.id);
-    return active.length ? list.filter((o) => active.includes(o.marketplace)) : list;
+    const list = allOffers.filter((offer) => offer.productId === product.id);
+    return active.length ? list.filter((offer) => active.includes(offer.marketplace)) : list;
   }, [allOffers, active, product.id]);
 
   const bestOffer = useMemo(() => bestOfferOf(offers), [offers]);
 
-  const isFav = useMemo(
-    () => isSaved(savedProducts, product.id),
-    [savedProducts, product.id]
-  );
+  const diagnosis = bestOffer ? getProductDiagnosis(product, bestOffer, offers) : null;
+
+  const isFav = useMemo(() => isSaved(savedProducts, product.id), [savedProducts, product.id]);
 
   if (!bestOffer) return null;
 
@@ -47,9 +47,11 @@ export function ProductCard({ product }: { product: Product }) {
           alt={product.name}
           imgClassName="transition-transform duration-300 group-hover:scale-105"
         />
+
         <div className="absolute left-2 top-2">
           <ScoreBadge score={bestOffer.computedScore} />
         </div>
+
         {product.trending ? (
           <div className="absolute right-2 top-2 inline-flex items-center gap-1 rounded-full bg-brand-orange px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-orange-foreground shadow-sm">
             <TrendingUp className="h-3 w-3" />
@@ -72,17 +74,32 @@ export function ProductCard({ product }: { product: Product }) {
           {product.name}
         </Link>
 
-        {/* Price hero */}
         <div className="rounded-lg border border-brand-navy/10 bg-gradient-to-br from-brand-navy/5 to-transparent p-3">
           <div className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
             Melhor oferta em {bestOffer.marketplace}
           </div>
+
           <div className="mt-0.5 text-2xl font-bold leading-tight text-brand-navy">
-            {bestOffer.price.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}
+            {bestOffer.price.toLocaleString("pt-BR", {
+              style: "currency",
+              currency: "BRL",
+            })}
           </div>
         </div>
 
-        {/* Meta grid */}
+        {diagnosis && diagnosis.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {diagnosis.tags.slice(0, 3).map((tag) => (
+              <span
+                key={tag}
+                className="rounded-full bg-brand-orange/10 px-2 py-0.5 text-[11px] font-medium text-brand-navy"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
         <dl className="grid grid-cols-3 gap-2 text-center">
           <Meta
             label="Avaliação"
@@ -93,6 +110,7 @@ export function ProductCard({ product }: { product: Product }) {
               </span>
             }
           />
+
           <Meta
             label="Vendas"
             value={
@@ -103,11 +121,13 @@ export function ProductCard({ product }: { product: Product }) {
                 : "—"
             }
           />
+
           <Meta label="Comissão" value={<CommissionBadge value={bestOffer.commission} />} />
         </dl>
 
         <div className="text-[11px] text-muted-foreground">
-          Disponível em {marketplaceCount} marketplace{marketplaceCount > 1 ? "s" : ""}
+          Disponível em {marketplaceCount} marketplace
+          {marketplaceCount > 1 ? "s" : ""}
         </div>
 
         <div className="mt-auto grid grid-cols-3 gap-1.5 pt-2">
@@ -148,7 +168,7 @@ export function ProductCard({ product }: { product: Product }) {
   );
 }
 
-function Meta({ label, value }: { label: string; value: React.ReactNode }) {
+function Meta({ label, value }: { label: string; value: ReactNode }) {
   return (
     <div className="rounded-md border bg-muted/30 px-1.5 py-1.5">
       <dt className="text-[9px] font-semibold uppercase tracking-wide text-muted-foreground">

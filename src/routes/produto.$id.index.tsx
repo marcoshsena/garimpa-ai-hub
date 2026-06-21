@@ -6,6 +6,7 @@ import { ProductImage } from "@/components/garimpa/ProductImage";
 import { Button } from "@/components/ui/button";
 import { Bookmark, BookmarkCheck, GitCompare, Megaphone, ArrowRight } from "lucide-react";
 import { bestOfferOf, enrichOffers } from "@/lib/garimpa/ranking";
+import { getProductDiagnosis } from "@/lib/garimpa/recommendations";
 
 export const Route = createFileRoute("/produto/$id/")({
   head: ({ params }) => ({
@@ -29,6 +30,9 @@ function ProductDetail() {
   const enrichedOffers = enrichOffers(offers);
   const bestOffer = bestOfferOf(enrichedOffers);
 
+  const diagnosis =
+    product && bestOffer ? getProductDiagnosis(product, bestOffer, enrichedOffers) : null;
+
   const fav = product ? isSaved(saved, product.id) : false;
 
   if (!product) {
@@ -46,11 +50,13 @@ function ProductDetail() {
 
   return (
     <AppShell>
-      <div className="grid gap-6 lg:grid-cols-[420px_1fr]">
-        <div className="overflow-hidden rounded-xl border bg-card shadow-sm">
-          <div className="aspect-[4/3] w-full">
-            <ProductImage src={product.image} alt={product.name} />
-          </div>
+      <div className="grid items-start gap-6 lg:grid-cols-[420px_1fr]">
+        <div className="self-start overflow-hidden rounded-xl border bg-card shadow-sm">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="aspect-[4/3] w-full object-cover"
+          />
         </div>
 
         <div className="space-y-4">
@@ -96,6 +102,84 @@ function ProductDetail() {
             <Info label="Ponto forte" value={product.strongPoint} accent="success" />
             <Info label="Ponto de atenção" value={product.attentionPoint} accent="warning" />
           </dl>
+
+          {diagnosis && (
+            <section className="rounded-xl border bg-card p-4 shadow-sm">
+              <div className="mb-3">
+                <h2 className="text-base font-semibold text-brand-navy">Diagnóstico Garimpa AI</h2>
+                <p className="text-sm text-muted-foreground">
+                  Uma leitura rápida sobre o potencial deste produto para divulgação.
+                </p>
+              </div>
+
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-lg border bg-muted/30 p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Potencial
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-brand-navy">
+                    {diagnosis.potential}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border bg-muted/30 p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Potencial visual
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-brand-navy">
+                    {diagnosis.visualPotential}
+                  </div>
+                </div>
+
+                <div className="rounded-lg border bg-muted/30 p-3">
+                  <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                    Risco
+                  </div>
+                  <div className="mt-1 text-sm font-semibold text-brand-navy">
+                    {diagnosis.disclosureRisk}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 grid gap-4 lg:grid-cols-2">
+                <div>
+                  <h3 className="text-sm font-semibold text-brand-navy">Canais recomendados</h3>
+
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {diagnosis.bestChannels.map((channel) => (
+                      <span
+                        key={channel}
+                        className="rounded-full border bg-muted px-2.5 py-1 text-xs font-medium"
+                      >
+                        {channel}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="text-sm font-semibold text-brand-navy">Abordagem sugerida</h3>
+
+                  <p className="mt-1 text-sm text-muted-foreground">{diagnosis.bestApproach}</p>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <h3 className="text-sm font-semibold text-brand-navy">Tags inteligentes</h3>
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {diagnosis.tags.slice(0, 4).map((tag) => (
+                    <span
+                      key={tag}
+                      className="rounded-full bg-brand-orange/10 px-2.5 py-1 text-xs font-medium text-brand-navy"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
 
           <p className="text-xs text-muted-foreground">
             Última atualização: {new Date(product.updatedAt).toLocaleDateString("pt-BR")}

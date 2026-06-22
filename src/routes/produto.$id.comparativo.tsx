@@ -488,6 +488,108 @@ function computeWinners(offers: EnrichedOffer[]) {
   };
 }
 
+function formatOptionalPrice(value?: number, currency = "BRL") {
+  if (typeof value !== "number") return "—";
+
+  const safeCurrency = currency === "unknown" ? "BRL" : currency;
+
+  return value.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: safeCurrency,
+  });
+}
+
+function formatOptionalDate(value?: string) {
+  if (!value) return "—";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function formatDataSource(value?: string) {
+  const labels: Record<string, string> = {
+    mock: "Mock",
+    manual: "Manual",
+    api: "API",
+    import: "Importação",
+    affiliate: "Afiliado",
+    unknown: "Desconhecida",
+  };
+
+  return value ? (labels[value] ?? value) : "—";
+}
+
+function formatSyncStatus(value?: string) {
+  const labels: Record<string, string> = {
+    updated: "Atualizado",
+    pending: "Pendente",
+    error: "Erro",
+    manual: "Manual",
+    stale: "Desatualizado",
+  };
+
+  return value ? (labels[value] ?? value) : "—";
+}
+
+function OfferMetadata({ offer }: { offer: EnrichedOffer }) {
+  const metadata = [
+    {
+      label: "Vendedor",
+      value: offer.sellerName || offer.storeName || "—",
+    },
+    {
+      label: "Preço anterior",
+      value: formatOptionalPrice(offer.previousPrice, offer.currency),
+    },
+    {
+      label: "Parcelamento",
+      value: offer.installmentInfo || "—",
+    },
+    {
+      label: "Entrega estimada",
+      value: offer.estimatedDelivery || "—",
+    },
+    {
+      label: "Condição",
+      value: offer.condition || "—",
+    },
+    {
+      label: "Estoque estimado",
+      value: typeof offer.stockQuantity === "number" ? `${offer.stockQuantity} un.` : "—",
+    },
+    {
+      label: "Última verificação",
+      value: formatOptionalDate(offer.lastCheckedAt ?? offer.lastSyncedAt),
+    },
+    {
+      label: "Fonte",
+      value: formatDataSource(offer.dataSource),
+    },
+    {
+      label: "Status",
+      value: formatSyncStatus(offer.syncStatus),
+    },
+  ];
+
+  return (
+    <div className="space-y-1.5 text-xs">
+      {metadata.map((item) => (
+        <div key={item.label} className="flex justify-between gap-2">
+          <span className="text-muted-foreground">{item.label}</span>
+          <span className="max-w-[140px] text-right font-medium text-brand-navy">{item.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function VerticalComparison({
   productId,
   marketplaces,
@@ -593,6 +695,10 @@ function VerticalComparison({
         ) : (
           <Empty />
         ),
+    },
+    {
+      label: "Dados da oferta",
+      render: (o) => (o ? <OfferMetadata offer={o} /> : <Empty />),
     },
     {
       label: "Links e ações",

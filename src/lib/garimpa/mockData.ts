@@ -4,9 +4,24 @@ import type {
   Marketplace,
   Offer,
   Product,
+  ProductCondition,
 } from "./types";
 
 const today = new Date().toISOString();
+
+const marketplaceCodes: Record<Marketplace, string> = {
+  Amazon: "amazon",
+  "Mercado Livre": "mercado-livre",
+  Shopee: "shopee",
+  Magalu: "magalu",
+};
+
+const sellerNames: Record<Marketplace, string> = {
+  Amazon: "Loja parceira Amazon",
+  "Mercado Livre": "Vendedor Mercado Livre",
+  Shopee: "Loja oficial Shopee",
+  Magalu: "Parceiro Magalu",
+};
 
 export const mockProducts: Product[] = [
   {
@@ -14,21 +29,47 @@ export const mockProducts: Product[] = [
     name: "Maleta de ferramentas 129 peças",
     category: "Ferramentas",
     niche: "Reparos domésticos",
-    image:
-      "https://images.unsplash.com/photo-1581147036324-c47a03a81d48?w=600&q=70",
+    image: "https://images.unsplash.com/photo-1581147036324-c47a03a81d48?w=600&q=70",
     shortDescription:
       "Kit completo com chaves, alicate, soquetes e maleta organizadora para pequenos reparos em casa.",
-    idealAudience:
-      "Quem mora sozinho, casais novos e pessoas fazendo pequenos reparos em casa.",
+    idealAudience: "Quem mora sozinho, casais novos e pessoas fazendo pequenos reparos em casa.",
     problemSolved: "Não ter ferramenta na hora de resolver um reparo simples.",
-    strongPoint:
-      "Maleta organizadora e variedade de peças por um preço acessível.",
+    strongPoint: "Maleta organizadora e variedade de peças por um preço acessível.",
     attentionPoint: "Uso doméstico leve — não substitui ferramenta profissional.",
     opportunityScore: 8.6,
     bestMarketplace: "Amazon",
     status: "Ativo",
     featured: true,
     trending: true,
+    brand: "Sparta",
+    model: "Kit doméstico 129 peças",
+    longDescription:
+      "Kit de ferramentas voltado para pequenos reparos domésticos, organização de ferramentas básicas e uso eventual em casa.",
+    keywords: ["ferramentas", "maleta", "kit doméstico", "reparos", "casa"],
+    attributes: [
+      { name: "Quantidade de peças", value: "129" },
+      { name: "Uso recomendado", value: "Doméstico leve" },
+      { name: "Acompanha maleta", value: "Sim" },
+    ],
+    imageGallery: [
+      {
+        url: "https://images.unsplash.com/photo-1581147036324-c47a03a81d48?w=600&q=70",
+        alt: "Maleta de ferramentas",
+        source: "mock",
+        primary: true,
+      },
+    ],
+    externalProductId: "mock-product-p1",
+    externalCatalogId: "mock-catalog-tools",
+    dataSource: "mock",
+    syncStatus: "updated",
+    lastSyncedAt: today,
+    dataQuality: {
+      source: "mock",
+      syncStatus: "updated",
+      lastSyncedAt: today,
+      confidence: 0.85,
+    },
     updatedAt: today,
   },
   {
@@ -36,10 +77,8 @@ export const mockProducts: Product[] = [
     name: "Organizador de pia compacto",
     category: "Casa e Organização",
     niche: "Organização de cozinha",
-    image:
-      "https://images.unsplash.com/photo-1556909114-44e3e9399a2c?w=600&q=70",
-    shortDescription:
-      "Suporte para esponja, detergente e bucha que ajuda a liberar espaço na pia.",
+    image: "https://images.unsplash.com/photo-1556909114-44e3e9399a2c?w=600&q=70",
+    shortDescription: "Suporte para esponja, detergente e bucha que ajuda a liberar espaço na pia.",
     idealAudience: "Apartamentos pequenos e pessoas que querem organizar melhor a cozinha.",
     problemSolved: "Pia bagunçada e produtos espalhados.",
     strongPoint: "Ocupa pouco espaço e tem boa utilidade no dia a dia.",
@@ -55,10 +94,8 @@ export const mockProducts: Product[] = [
     name: "Kit lenço umedecido econômico",
     category: "Bebê e Família",
     niche: "Higiene do bebê",
-    image:
-      "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&q=70",
-    shortDescription:
-      "Pacote econômico de lenços umedecidos para a rotina diária do bebê.",
+    image: "https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&q=70",
+    shortDescription: "Pacote econômico de lenços umedecidos para a rotina diária do bebê.",
     idealAudience: "Mães, pais e cuidadores que buscam economia em itens recorrentes.",
     problemSolved: "Gasto frequente com lenços avulsos.",
     strongPoint: "Ajuda a reduzir custo por unidade em produto de uso diário.",
@@ -74,8 +111,7 @@ export const mockProducts: Product[] = [
     name: "Suporte para notebook ajustável",
     category: "Tecnologia",
     niche: "Home office",
-    image:
-      "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=70",
+    image: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=70",
     shortDescription:
       "Suporte dobrável com regulagem de altura para melhorar postura e ventilação do notebook.",
     idealAudience: "Quem trabalha ou estuda em home office.",
@@ -87,6 +123,35 @@ export const mockProducts: Product[] = [
     status: "Ativo",
     featured: true,
     trending: true,
+    brand: "Genérico",
+    model: "Suporte ajustável dobrável",
+    longDescription:
+      "Suporte dobrável para notebook, pensado para melhorar ergonomia, circulação de ar e organização da mesa de trabalho.",
+    keywords: ["notebook", "home office", "ergonomia", "suporte", "setup"],
+    attributes: [
+      { name: "Tipo", value: "Dobrável" },
+      { name: "Altura", value: "Ajustável" },
+      { name: "Uso recomendado", value: "Home office e estudos" },
+    ],
+    imageGallery: [
+      {
+        url: "https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=600&q=70",
+        alt: "Suporte para notebook em mesa de trabalho",
+        source: "mock",
+        primary: true,
+      },
+    ],
+    externalProductId: "mock-product-p4",
+    externalCatalogId: "mock-catalog-home-office",
+    dataSource: "mock",
+    syncStatus: "updated",
+    lastSyncedAt: today,
+    dataQuality: {
+      source: "mock",
+      syncStatus: "updated",
+      lastSyncedAt: today,
+      confidence: 0.82,
+    },
     updatedAt: today,
   },
   {
@@ -94,8 +159,7 @@ export const mockProducts: Product[] = [
     name: "Mouse gamer custo-benefício",
     category: "Games",
     niche: "Setup gamer",
-    image:
-      "https://images.unsplash.com/photo-1527814050087-3793815479db?w=600&q=70",
+    image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=600&q=70",
     shortDescription:
       "Mouse com DPI ajustável e iluminação RGB para quem está montando um setup básico.",
     idealAudience: "Gamers iniciantes e pessoas montando o primeiro setup.",
@@ -113,8 +177,7 @@ export const mockProducts: Product[] = [
     name: "Organizador de fraldas para cômoda",
     category: "Bebê e Família",
     niche: "Organização do bebê",
-    image:
-      "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600&q=70",
+    image: "https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600&q=70",
     shortDescription:
       "Divisória para cômoda que separa fraldas, lencinhos, pomada e itens de troca.",
     idealAudience: "Famílias com bebês pequenos.",
@@ -132,10 +195,8 @@ export const mockProducts: Product[] = [
     name: "Potes herméticos para cozinha",
     category: "Cozinha",
     niche: "Organização de despensa",
-    image:
-      "https://images.unsplash.com/photo-1584990347449-a3a8a1f50c2a?w=600&q=70",
-    shortDescription:
-      "Kit de potes com tampa de pressão para organizar mantimentos secos.",
+    image: "https://images.unsplash.com/photo-1584990347449-a3a8a1f50c2a?w=600&q=70",
+    shortDescription: "Kit de potes com tampa de pressão para organizar mantimentos secos.",
     idealAudience: "Quem quer organizar despensa, armário e cozinha.",
     problemSolved: "Alimentos ressecando e bagunça no armário.",
     strongPoint: "Visual organizado e fechamento que conserva melhor.",
@@ -145,6 +206,35 @@ export const mockProducts: Product[] = [
     status: "Ativo",
     featured: true,
     trending: true,
+    brand: "Genérico",
+    model: "Kit potes herméticos",
+    longDescription:
+      "Conjunto de potes herméticos para organizar mantimentos secos, melhorar a visualização da despensa e conservar alimentos por mais tempo.",
+    keywords: ["potes", "cozinha", "organização", "despensa", "mantimentos"],
+    attributes: [
+      { name: "Tipo", value: "Potes herméticos" },
+      { name: "Uso recomendado", value: "Mantimentos secos" },
+      { name: "Ambiente", value: "Cozinha e despensa" },
+    ],
+    imageGallery: [
+      {
+        url: "https://images.unsplash.com/photo-1584990347449-a3a8a1f50c2a?w=600&q=70",
+        alt: "Potes organizadores para cozinha",
+        source: "mock",
+        primary: true,
+      },
+    ],
+    externalProductId: "mock-product-p7",
+    externalCatalogId: "mock-catalog-kitchen",
+    dataSource: "mock",
+    syncStatus: "updated",
+    lastSyncedAt: today,
+    dataQuality: {
+      source: "mock",
+      syncStatus: "updated",
+      lastSyncedAt: today,
+      confidence: 0.84,
+    },
     updatedAt: today,
   },
   {
@@ -152,8 +242,7 @@ export const mockProducts: Product[] = [
     name: "Luminária LED para setup",
     category: "Tecnologia",
     niche: "Setup e iluminação",
-    image:
-      "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=70",
+    image: "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&q=70",
     shortDescription:
       "Barra de LED com controle de cor para iluminar mesa de trabalho ou setup gamer.",
     idealAudience: "Quem cria conteúdo, estuda, trabalha ou joga no computador.",
@@ -180,6 +269,13 @@ interface MarketplaceVariant {
   availability: Availability;
   note?: string;
   titleSuffix: string;
+
+  sellerName?: string;
+  previousPriceMul?: number;
+  installmentInfo?: string;
+  estimatedDelivery?: string;
+  condition?: ProductCondition;
+  shippingCost?: number;
 }
 
 const marketplaceVariants: MarketplaceVariant[] = [
@@ -370,20 +466,26 @@ function getOfferScore(variant: MarketplaceVariant): number {
 
 function buildOffers(product: Product, basePrice: number): Offer[] {
   return marketplaceVariants.map((variant, index) => {
-    const override =
-      productMarketplaceOverrides[product.id]?.[variant.marketplace] ?? {};
+    const override = productMarketplaceOverrides[product.id]?.[variant.marketplace] ?? {};
 
     const merged: MarketplaceVariant = {
       ...variant,
       ...override,
     };
 
+    const offerId = `${product.id}-o${index + 1}`;
+    const marketplaceCode = marketplaceCodes[merged.marketplace];
+    const price = Number((basePrice * merged.priceMul).toFixed(2));
+    const previousPrice = Number(
+      (basePrice * (merged.previousPriceMul ?? merged.priceMul * 1.12)).toFixed(2),
+    );
+
     return {
-      id: `${product.id}-o${index + 1}`,
+      id: offerId,
       productId: product.id,
       marketplace: merged.marketplace,
       title: `${product.name} - ${merged.titleSuffix}`,
-      price: Number((basePrice * merged.priceMul).toFixed(2)),
+      price,
       rating: merged.rating,
       reviews: merged.reviews,
       sales: merged.sales,
@@ -396,6 +498,56 @@ function buildOffers(product: Product, basePrice: number): Offer[] {
       offerScore: getOfferScore(merged),
       bestOption: false,
       updatedAt: today,
+
+      externalOfferId: `${marketplaceCode}-${offerId}`,
+      externalProductId: product.externalProductId ?? `mock-product-${product.id}`,
+      sellerName: merged.sellerName ?? sellerNames[merged.marketplace],
+      sellerId: `${marketplaceCode}-seller-${product.id}`,
+      storeName: merged.sellerName ?? sellerNames[merged.marketplace],
+      image: product.image,
+      imageGallery: product.imageGallery,
+      currency: "BRL",
+      previousPrice,
+      installmentInfo:
+        merged.installmentInfo ??
+        `em até 10x de ${(price / 10).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        })}`,
+      shippingCost: merged.shippingCost ?? 0,
+      estimatedDelivery: merged.estimatedDelivery ?? "Prazo estimado não informado",
+      condition: merged.condition ?? "Novo",
+      stockQuantity:
+        merged.availability === "Esgotado" ? 0 : merged.availability === "Estoque baixo" ? 8 : 42,
+      lastCheckedAt: today,
+      lastPriceChangeAt: today,
+      priceHistory: [
+        {
+          offerId,
+          marketplace: merged.marketplace,
+          price: previousPrice,
+          currency: "BRL",
+          capturedAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 7).toISOString(),
+          source: "mock",
+        },
+        {
+          offerId,
+          marketplace: merged.marketplace,
+          price,
+          currency: "BRL",
+          capturedAt: today,
+          source: "mock",
+        },
+      ],
+      dataSource: "mock",
+      syncStatus: "updated",
+      lastSyncedAt: today,
+      dataQuality: {
+        source: "mock",
+        syncStatus: "updated",
+        lastSyncedAt: today,
+        confidence: 0.8,
+      },
     };
   });
 }

@@ -553,37 +553,21 @@ function OfferMetadata({ offer }: { offer: EnrichedOffer }) {
       value: offer.installmentInfo || "—",
     },
     {
-      label: "Entrega estimada",
-      value: offer.estimatedDelivery || "—",
-    },
-    {
-      label: "Condição",
-      value: offer.condition || "—",
-    },
-    {
-      label: "Estoque estimado",
-      value: typeof offer.stockQuantity === "number" ? `${offer.stockQuantity} un.` : "—",
-    },
-    {
-      label: "Última verificação",
+      label: "Atualizado em",
       value: formatOptionalDate(offer.lastCheckedAt ?? offer.lastSyncedAt),
-    },
-    {
-      label: "Fonte",
-      value: formatDataSource(offer.dataSource),
-    },
-    {
-      label: "Status",
-      value: formatSyncStatus(offer.syncStatus),
     },
   ];
 
   return (
-    <div className="space-y-1.5 text-xs">
+    <div className="space-y-2 text-xs">
       {metadata.map((item) => (
-        <div key={item.label} className="flex justify-between gap-2">
-          <span className="text-muted-foreground">{item.label}</span>
-          <span className="max-w-[140px] text-right font-medium text-brand-navy">{item.value}</span>
+        <div key={item.label}>
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+            {item.label}
+          </div>
+          <div className="mt-0.5 line-clamp-2 font-medium text-brand-navy">
+            {item.value}
+          </div>
         </div>
       ))}
     </div>
@@ -697,7 +681,7 @@ function VerticalComparison({
         ),
     },
     {
-      label: "Dados da oferta",
+      label: "Resumo da oferta",
       render: (o) => (o ? <OfferMetadata offer={o} /> : <Empty />),
     },
     {

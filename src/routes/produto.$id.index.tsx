@@ -2,11 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppShell } from "@/components/garimpa/AppShell";
 import { useProduct, useProductOffers, toggleSaved, useSaved, isSaved } from "@/lib/garimpa/store";
 import { CategoryBadge, MarketplaceBadge, ScoreBadge } from "@/components/garimpa/Badges";
-import { ProductImage } from "@/components/garimpa/ProductImage";
 import { Button } from "@/components/ui/button";
 import { Bookmark, BookmarkCheck, GitCompare, Megaphone, ArrowRight } from "lucide-react";
 import { bestOfferOf, enrichOffers } from "@/lib/garimpa/ranking";
 import { getProductDiagnosis } from "@/lib/garimpa/recommendations";
+import type { Product } from "@/lib/garimpa/types";
 
 export const Route = createFileRoute("/produto/$id/")({
   head: ({ params }) => ({
@@ -102,6 +102,8 @@ function ProductDetail() {
             <Info label="Ponto forte" value={product.strongPoint} accent="success" />
             <Info label="Ponto de atenção" value={product.attentionPoint} accent="warning" />
           </dl>
+
+          <ProductDataSummary product={product} />
 
           {diagnosis && (
             <section className="rounded-xl border bg-card p-4 shadow-sm">
@@ -231,6 +233,115 @@ function ProductDetail() {
         </div>
       </section>
     </AppShell>
+  );
+}
+
+function formatOptionalDate(value?: string) {
+  if (!value) return "—";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) return "—";
+
+  return date.toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
+function formatDataSource(value?: string) {
+  const labels: Record<string, string> = {
+    mock: "Mock",
+    manual: "Manual",
+    api: "API",
+    import: "Importação",
+    affiliate: "Afiliado",
+    unknown: "Desconhecida",
+  };
+
+  return value ? (labels[value] ?? value) : "—";
+}
+
+function formatSyncStatus(value?: string) {
+  const labels: Record<string, string> = {
+    updated: "Atualizado",
+    pending: "Pendente",
+    error: "Erro",
+    manual: "Manual",
+    stale: "Desatualizado",
+  };
+
+  return value ? (labels[value] ?? value) : "—";
+}
+
+function ProductDataSummary({ product }: { product: Product }) {
+  const hasMainData =
+    product.brand ||
+    product.model ||
+    product.dataSource ||
+    product.syncStatus ||
+    product.lastSyncedAt ||
+    product.attributes?.length;
+
+  if (!hasMainData) return null;
+
+  const attributes = product.attributes?.slice(0, 3) ?? [];
+
+  return (
+    <section className="rounded-xl border bg-card p-4 shadow-sm">
+      <div className="mb-3">
+        <h2 className="text-base font-semibold text-brand-navy">Dados do produto</h2>
+        <p className="text-sm text-muted-foreground">
+          Informações enriquecidas para apoiar a curadoria.
+        </p>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+        <CompactInfo label="Marca" value={product.brand} />
+        <CompactInfo label="Modelo" value={product.model} />
+        <CompactInfo label="Fonte" value={formatDataSource(product.dataSource)} />
+        <CompactInfo label="Status" value={formatSyncStatus(product.syncStatus)} />
+      </div>
+
+      <div className="mt-2">
+        <CompactInfo
+          label="Última sincronização"
+          value={formatOptionalDate(product.lastSyncedAt ?? product.updatedAt)}
+        />
+      </div>
+
+      {attributes.length > 0 && (
+        <div className="mt-4">
+          <h3 className="text-sm font-semibold text-brand-navy">Atributos principais</h3>
+
+          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            {attributes.map((attribute) => (
+              <div
+                key={`${attribute.name}-${attribute.value}`}
+                className="rounded-lg border bg-muted/30 p-3"
+              >
+                <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+                  {attribute.name}
+                </div>
+                <div className="mt-1 text-sm font-medium text-brand-navy">{attribute.value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CompactInfo({ label, value }: { label: string; value?: string }) {
+  return (
+    <div className="rounded-lg border bg-muted/30 p-3">
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </div>
+      <div className="mt-1 text-sm font-medium text-brand-navy">{value || "—"}</div>
+    </div>
   );
 }
 
